@@ -27,7 +27,7 @@ best = []
 class Wall:
     WIDTH = xmax
     HEIGHT = 100
-    COLOR = black
+    COLOR = green
 
     def __init__(self, y):
         self.y = y
@@ -38,24 +38,34 @@ class Wall:
 class Obstacle:
     LENGTH = ymax / 4
     WIDTH = xmax / 30
-    COLOR = red
-    vx = -1200
+    COLOR = green
+    vx = -2000
 
     def __init__(self, x):
         self.x = x
-        self.y = random.randrange(self.LENGTH, ymax - self.LENGTH - Wall.HEIGHT)
-        self.rect = pg.Rect(self.x, self.y, self.WIDTH, self.LENGTH)
+        self.y = random.randrange(self.LENGTH/2 + Wall.HEIGHT, ymax - self.LENGTH * 1.5 - Wall.HEIGHT)
+        self.y2 = self.y + self.LENGTH
+        self.rect = pg.Rect(self.x, 0, self.WIDTH, self.LENGTH)
+        self.rect2 = pg.Rect(self.x, 0, self.WIDTH, self.LENGTH)
 
     def move(self, dt):
         self.x += self.vx * dt
         self.rect.left = self.x
-        self.rect.top = self.y
+        self.rect.height = self.y
+        self.rect.top = 0
+        self.rect.bottom = self.y
+
+
+        self.rect2.left = self.x
+        self.rect2.height = ymax - self.y
+        self.rect2.top = self.y + self.LENGTH
 
     def draw(self, scr):
         pg.draw.rect(scr, self.COLOR, self.rect)
+        pg.draw.rect(scr, self.COLOR, self.rect2)
         if self.rect.right <= 0:
             self.x = xmax
-            self.y = random.randrange(Wall.HEIGHT, ymax - self.LENGTH - Wall.HEIGHT)
+            self.y = random.randrange(self.LENGTH/4 + Wall.HEIGHT, ymax - self.LENGTH * 1.25 - Wall.HEIGHT)
 
 class Helicopter:
     # Helicopter image
@@ -93,7 +103,7 @@ def hitwall(helicopter, ground, ceiling):
     return False
 
 def hitobstacle (helicopter, obstacle):
-    if pg.Rect.colliderect(helicopter.rect, obstacle.rect):
+    if pg.Rect.colliderect(helicopter.rect, obstacle.rect) or pg.Rect.colliderect(helicopter.rect, obstacle.rect2):
         helicopter.vy = 0
         return True
     return False
@@ -110,7 +120,7 @@ def write_text(txt, x_pos, y_pos, color, scr, font=32):
 
 def draw_window(scr, ceiling, ground, obstacle, helicopters, score, gen, best):
     # Draw stuff
-    scr.fill(white)
+    scr.fill(black)
     ceiling.draw(scr)
     ground.draw(scr)
     obstacle.draw(scr)
@@ -179,7 +189,7 @@ def eval_genomes(genomes, config):
             best.append(score)
 
         for x, heli in enumerate(helis):
-            heli.move(dt, climb, descend)
+            heli.move(climb, descend)
             ge[x].fitness += 1
 
             # Horizontal distance to the obstacle
