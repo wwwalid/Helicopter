@@ -1,5 +1,4 @@
 import pygame as pg
-import numpy as np
 import random
 import neat
 import os
@@ -194,22 +193,25 @@ def eval_genomes(genomes, config):
             ge[x].fitness += 1
 
             # Horizontal distance to the obstacle
-            horz_dist = obstacle.rect.left - heli.rect.right
+            # horz_dist = obstacle.rect.left - heli.rect.right
             # Vertical distance from top of obstacle to bottom of helicopter
             vert_dist1 = obstacle.rect2.top - heli.rect.bottom
             # Vertical distance from bottom of obstacle to top of helicopter
             vert_dist2 = heli.rect.top - obstacle.rect.bottom
             # Vertical distance from bottom of heli to the ground
-            ground_dist = ground.rect.top - heli.rect.bottom
-            # Vertical distance from top of heli to the ceiling
-            ceilingdist = heli.rect.top - ceiling.rect.bottom
+            # ground_dist = ground.rect.top - heli.rect.bottom
+            # # Vertical distance from top of heli to the ceiling
+            # ceilingdist = heli.rect.top - ceiling.rect.bottom
+
+
 
             # Vertical velocity znd vertical position
             # heli.vy, heli.y
 
             # 6 inputs
-            inputs = [horz_dist, vert_dist1, vert_dist2, ground_dist, ceilingdist, heli.y]
+            # inputs = [horz_dist, vert_dist1, vert_dist2, ground_dist, ceilingdist, heli.y]
             # inputs = [ground_dist, ceilingdist, heli.rect.centerx, heli.rect.centery, heli.rect.centery]
+            inputs = [heli.y, vert_dist1, vert_dist2]
 
             # 2 output (climb or descend)
             output = nets[x].activate(inputs)
@@ -226,7 +228,7 @@ def eval_genomes(genomes, config):
 
             # Increase fitness if heli passed the obstacle
             if passed(heli, obstacle):
-                ge[x].fitness += 20
+                ge[x].fitness += 1
             if obstacle.rect.right <= 0:
                 heli.passed = False
             if obstacle.x < heli.x:
@@ -239,7 +241,7 @@ def eval_genomes(genomes, config):
                 nets.pop(x)
                 ge.pop(x)
 
-            if hitobstacle(heli, obstacle):
+            elif hitobstacle(heli, obstacle):
                 ge[x].fitness -= 10
                 helis.pop(x)
                 nets.pop(x)
