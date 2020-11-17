@@ -73,7 +73,7 @@ class Helicopter:
     y = ymax / 2
     vy = 0
     heli_img = pg.image.load("helicopter.png").convert()
-    heli_img.set_colorkey(white)
+    heli_img.set_colorkey(black)
 
 
     def __init__(self):
@@ -126,12 +126,13 @@ def draw_window(scr, ceiling, ground, obstacle, helicopters, score, gen, best):
     obstacle.draw(scr)
     for helicopter in helicopters:
         helicopter.draw(scr)
-    # helicopter.draw(scr)
-    write_text(f"Score: {score}", xmax / 10, ymax - Wall.HEIGHT / 2, white, scr, font=32)
-    write_text(f"Generation: {gen}", xmax * 9 / 10, ymax - Wall.HEIGHT / 2, white, scr, font=32)
-    write_text(f"Alive: {len(helicopters)}", xmax * 2 / 3, ymax - Wall.HEIGHT / 2, white, scr, font=32)
+    # Draw text
+    textcolor = black
+    write_text(f"Score: {score}", xmax / 10, ymax - Wall.HEIGHT / 2, textcolor, scr, font=32)
+    write_text(f"Generation: {gen}", xmax * 9 / 10, ymax - Wall.HEIGHT / 2, textcolor, scr, font=32)
+    write_text(f"Alive: {len(helicopters)}", xmax * 2 / 3, ymax - Wall.HEIGHT / 2, textcolor, scr, font=32)
     if len(best) > 0:
-        write_text(f"Best: {max(best)}", xmax / 3, ymax - Wall.HEIGHT / 2, white, scr, font=32)
+        write_text(f"Best: {max(best)}", xmax / 3, ymax - Wall.HEIGHT / 2, textcolor, scr, font=32)
 
 
     # Update screen
@@ -195,21 +196,19 @@ def eval_genomes(genomes, config):
             # Horizontal distance to the obstacle
             horz_dist = obstacle.rect.left - heli.rect.right
             # Vertical distance from top of obstacle to bottom of helicopter
-            vert_dist1 = obstacle.rect.top - heli.rect.bottom
+            vert_dist1 = obstacle.rect2.top - heli.rect.bottom
             # Vertical distance from bottom of obstacle to top of helicopter
             vert_dist2 = heli.rect.top - obstacle.rect.bottom
             # Vertical distance from bottom of heli to the ground
-            ground_dist = np.abs(ground.rect.top - heli.rect.bottom)
+            ground_dist = ground.rect.top - heli.rect.bottom
             # Vertical distance from top of heli to the ceiling
-            ceilingdist = np.abs(heli.rect.top - ceiling.rect.bottom)
-            # Space between walls and obstacle
-            space1 = np.abs(obstacle.rect.top - ceiling.rect.bottom)
-            space2 = np.abs(obstacle.rect.bottom - ground.rect.top)
+            ceilingdist = heli.rect.top - ceiling.rect.bottom
+
             # Vertical velocity znd vertical position
             # heli.vy, heli.y
 
-            # 8 inputs
-            inputs = [horz_dist, vert_dist1, vert_dist2, ground_dist, ceilingdist, heli.y, space1, space2]
+            # 6 inputs
+            inputs = [horz_dist, vert_dist1, vert_dist2, ground_dist, ceilingdist, heli.y]
             # inputs = [ground_dist, ceilingdist, heli.rect.centerx, heli.rect.centery, heli.rect.centery]
 
             # 2 output (climb or descend)
