@@ -1,1 +1,1 @@
-This is my second project using NEAT.
+This is my second project using NEAT (Neuroevolution of Augmenting Topologies) algorithm. I created a population of AI helicopters that should avoid obstacles by flying up or down. The algorithm used is a genetic algorithm, which means that in each generation the "fittest" genomes are selected and used to create the next generation. In this case, the best genome is the helicopter which survives the longest.
